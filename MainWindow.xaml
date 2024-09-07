@@ -5,8 +5,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:us="clr-namespace:Calender.UserControls"
-        FontFamily="Trebuchet MS" mc:Ignorable="d" WindowStartupLocation="CenterScreen" WindowStyle="None" 
-        AllowsTransparency="True" Background="Transparent" Height="590" Width="900">
+        FontFamily="Trebuchet MS" mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="SingleBorderWindow"
+        ResizeMode="CanResize"
+        Height="590" Width="900">
 
     <Grid>
         <!--Grid Background-->
@@ -90,13 +93,6 @@
 
                 <TextBlock Text="5 tasks- 2 dates left" Foreground="#EBA5BB" FontSize="16" Margin="35 0 20 0"/>
 
-                <StackPanel x:Name="calendarItemsPanel" Grid.Column="1">
-                    <!-- Notes will be dynamically added here -->
-                </StackPanel>
-
-                <Button Content="Add Note" Click="AddNewItem" />
-                
-                
                 <!--Add Notes-->
                 <Border Background="#CD5278" CornerRadius="10" HorizontalAlignment="Center" Width="355" Margin="0 30 0 20" Padding="17 15 5 15">
                     <Grid>
@@ -139,11 +135,9 @@
                 </Border>
 
                 <!--Notes-->
-                <us:Item Title="Post on social networks" Time="09:45 - 10:30" Color="#EBA5BB" Icon="CheckCircle" IconBell="BellSlash"/>
-                <us:Item Title="Review the app design" Time="11:30 - 12:00" Color="#EBA5BB" Icon="CheckCircle" IconBell="BellSlash"/>
-                <us:Item Title="Build a demo of the app" Time="14:00 - 15:30" Color="#f1f1f1" Icon="CircleThin" IconBell="Bell"/>
-                <us:Item Title="Dinner with John Doe" Time="20:15 - 21:45" Color="#f1f1f1" Icon="CircleThin" IconBell="Bell"/>
-                <us:Item Title="Send email to Mohammad" Time="23:00 - 23:20" Color="#f1f1f1" Icon="CircleThin" IconBell="Bell"/>
+                <StackPanel x:Name="calendarItemsPanel" Grid.Column="1">
+                    <!-- Notes will be dynamically added here -->
+                </StackPanel>
 
             </StackPanel>
         </Grid>

@@ -8,6 +8,8 @@ namespace Calender.UserControls
     public partial class Item : UserControl
     {
         public event EventHandler<int> DeleteItem;
+        public event EventHandler<int> CheckItem;
+        public event EventHandler<int> MuteItem;
 
         public Item()
         {
@@ -54,20 +56,28 @@ namespace Calender.UserControls
             get { return (FontAwesome.WPF.FontAwesomeIcon)GetValue(IconBellProperty); }
             set { SetValue(IconBellProperty, value); }
         }
-        
+
         public static readonly DependencyProperty IconBellProperty = DependencyProperty.Register("IconBell", typeof(FontAwesome.WPF.FontAwesomeIcon), typeof(Item));
 
         private void DeleteItem_Click(object sender, RoutedEventArgs e)
-    {
-        DeleteItem?.Invoke(this, ItemId);
-    }
+        {
+            DeleteItem?.Invoke(this, ItemId);
+        }
 
-    public int ItemId
-    {
-        get { return (int)GetValue(ItemIdProperty); }
-        set { SetValue(ItemIdProperty, value); }
-    }
+        private void CheckItem_Click(object sender, RoutedEventArgs e)
+        {
+            CheckItem?.Invoke(this, ItemId);
+        }
+        private void MuteItem_Click(object sender, RoutedEventArgs e)
+        {
+            MuteItem?.Invoke(this, ItemId);
+        }
+        public int ItemId
+        {
+            get { return (int)GetValue(ItemIdProperty); }
+            set { SetValue(ItemIdProperty, value); }
+        }
 
-    public static readonly DependencyProperty ItemIdProperty = DependencyProperty.Register("ItemId", typeof(int), typeof(Item));
+        public static readonly DependencyProperty ItemIdProperty = DependencyProperty.Register("ItemId", typeof(int), typeof(Item));
     }
 }

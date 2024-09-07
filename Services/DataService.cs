@@ -34,7 +34,52 @@ namespace Calender.Services
             var items = await LoadDataAsync();
             return items.Any() ? items.Max(i => i.ItemId) + 1 : 1;
         }
+        public async Task<bool> CheckItemAsync(int itemId)
+        {
+            try
+            {
+                var items = await LoadDataAsync();
+                var itemToCheck = items.FirstOrDefault(i => i.ItemId == itemId);
 
+                if (itemToCheck != null)
+                {
+                    itemToCheck.IsChecked = !itemToCheck.IsChecked;
+                    await SaveDataAsync(items);
+                    return true;
+                }
+                else
+                {
+                    throw new Exception("Item not found");
+                }
+            }
+            catch (Exception error)
+            {
+                throw new Exception($"Error while trying to check item: {error.Message}");
+            }
+        }
+        public async Task<bool> MuteItemAsync(int itemId)
+        {
+            try
+            {
+                var items = await LoadDataAsync();
+                var itemToMute = items.FirstOrDefault(i => i.ItemId == itemId);
+
+                if (itemToMute != null)
+                {
+                    itemToMute.IsMuted = !itemToMute.IsMuted;
+                    await SaveDataAsync(items);
+                    return true;
+                }
+                else
+                {
+                    throw new Exception("Item not found");
+                }
+            }
+            catch (Exception error)
+            {
+                throw new Exception($"Error while trying to mute item: {error.Message}");
+            }
+        }
         public async Task<bool> DeleteItemAsync(int itemId)
         {
             try
