@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -6,12 +7,12 @@ namespace Calender.UserControls
 {
     public partial class Item : UserControl
     {
+        public event EventHandler<int> DeleteItem;
+
         public Item()
         {
             InitializeComponent();
         }
-
-
         public string Title
         {
             get { return (string)GetValue(TitleProperty); }
@@ -53,8 +54,20 @@ namespace Calender.UserControls
             get { return (FontAwesome.WPF.FontAwesomeIcon)GetValue(IconBellProperty); }
             set { SetValue(IconBellProperty, value); }
         }
-
+        
         public static readonly DependencyProperty IconBellProperty = DependencyProperty.Register("IconBell", typeof(FontAwesome.WPF.FontAwesomeIcon), typeof(Item));
 
+        private void DeleteItem_Click(object sender, RoutedEventArgs e)
+    {
+        DeleteItem?.Invoke(this, ItemId);
+    }
+
+    public int ItemId
+    {
+        get { return (int)GetValue(ItemIdProperty); }
+        set { SetValue(ItemIdProperty, value); }
+    }
+
+    public static readonly DependencyProperty ItemIdProperty = DependencyProperty.Register("ItemId", typeof(int), typeof(Item));
     }
 }

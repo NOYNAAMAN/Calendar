@@ -55,8 +55,7 @@
                     <local:MenuButton Icon="Check" Caption="Check"/>
                     <local:MenuButton Icon="BellSlash" Caption="Mute"/>
                     <local:MenuButton Icon="Pencil" Caption="Edit"/>
-                    <local:MenuButton Icon="Trash" Caption="Delete"/>
-
+                    <local:MenuButton Icon="Trash" Caption="Delete" Click="DeleteItem_Click"/>
                 </StackPanel>
             </Border>
         </Popup>

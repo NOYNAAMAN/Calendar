@@ -90,6 +90,13 @@
 
                 <TextBlock Text="5 tasks- 2 dates left" Foreground="#EBA5BB" FontSize="16" Margin="35 0 20 0"/>
 
+                <StackPanel x:Name="calendarItemsPanel" Grid.Column="1">
+                    <!-- Notes will be dynamically added here -->
+                </StackPanel>
+
+                <Button Content="Add Note" Click="AddNewItem" />
+                
+                
                 <!--Add Notes-->
                 <Border Background="#CD5278" CornerRadius="10" HorizontalAlignment="Center" Width="355" Margin="0 30 0 20" Padding="17 15 5 15">
                     <Grid>
@@ -125,7 +132,7 @@
 
                         </StackPanel>
 
-                        <Button Style="{StaticResource button}" Grid.Column="1">
+                        <Button Style="{StaticResource button}" Grid.Column="1" Click="AddNewItem" >
                             <fa:ImageAwesome Icon="PlusCircle" Width="28" Height="28" Foreground="#f9f9f9" />
                         </Button>
                     </Grid>
