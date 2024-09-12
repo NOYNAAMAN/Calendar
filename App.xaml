@@ -1,4 +1,4 @@
-﻿<Application x:Class="Calender.App"
+<Application x:Class="Calender.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
