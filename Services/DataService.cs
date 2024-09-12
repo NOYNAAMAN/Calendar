@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using System;
 using System.Linq;
@@ -91,6 +92,7 @@ namespace Calender.Services
                 {
                     items.Remove(itemToDelete);
                     await SaveDataAsync(items);
+                    await LoadDataAsync();
                     return true;
                 }
                 else
