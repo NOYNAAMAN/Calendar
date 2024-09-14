@@ -53,7 +53,7 @@
                 <StackPanel>
                     <local:MenuButton Icon="Check" Caption="Check" Click="CheckItem_Click" />
                     <local:MenuButton Icon="BellSlash" Caption="Mute" Click="MuteItem_Click"/>
-                    <local:MenuButton Icon="Pencil" Caption="Edit"/>
+                    <local:MenuButton Icon="Pencil" Caption="Edit" Click="EditItem_Click" />
                     <local:MenuButton Icon="Trash" Caption="Delete" Click="DeleteItem_Click"/>
                 </StackPanel>
             </Border>

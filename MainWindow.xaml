@@ -8,18 +8,19 @@
         FontFamily="Trebuchet MS" mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         WindowStyle="SingleBorderWindow"
-        ResizeMode="CanResize"
+        ResizeMode="NoResize"
+        MinHeight="590" MinWidth="900"
         Height="590" Width="900">
     <Grid>
         <!--Grid Background-->
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.2*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="1.5*" />
+                <!-- Calendar Panel -->
+                <ColumnDefinition Width="1.5*" />
+                <!-- Right Panel -->
             </Grid.ColumnDefinitions>
-
-            <Border CornerRadius="20 0 0 20" Background="#FEFEFE"/>
-
+            <Border CornerRadius="20 0 0 20" Background="#FEFEFE" Margin="80,0,0,0"/>
             <Border CornerRadius="0 20 20 0" MouseDown="Border_MouseDown" Grid.Column="1" Background="#C73F69"/>
         </Grid>
 
@@ -29,36 +30,39 @@
                 <ColumnDefinition Width="1.2*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <StackPanel>
-                <!--Year Selection-->
-                <!--Month Selection-->
+            <Grid Grid.Column="0" Margin="0,0,41,0">
                 <Calendar x:Name="MyCalendar"
                   CalendarDayButtonStyle="{DynamicResource CalendarCalendarDayButtonStyle1}"
                   Style="{DynamicResource CalendarStyle1}"
                   SelectedDatesChanged="Calendar_SelectedDatesChanged"
-                />
-            </StackPanel>
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center"
+                  Margin="10"/>
+            </Grid>
             <StackPanel Grid.Column="1">
                 <!--Titles-->
-                <StackPanel Margin="30 45 30 10" Orientation="Horizontal">
+                <StackPanel Margin="30 45 30 10" Orientation="Horizontal" Width="377">
                     <TextBlock x:Name="DayTextBlock" Text="16" FontSize="50" Foreground="#FFFFFF"/>
 
                     <StackPanel Grid.Column="1" Margin="10 0 0 0" VerticalAlignment="Center">
                         <TextBlock x:Name="MonthTextBlock" Text="November" Foreground="#FFFFFF" FontSize="24"/>
                         <TextBlock x:Name="DayOfWeekTextBlock" Text="Monday" Foreground="#EBA5BB" FontSize="14"/>
                     </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10" Width="120" >
+                        <!-- Left Button: Go to Previous Day -->
+                        <Button Style="{StaticResource buttonBig}" Click="PreviousDay_Click">
+                            <fa:ImageAwesome Icon="AngleLeft" Style="{StaticResource angleBig}" RenderTransformOrigin="0.701,0.5"/>
+                        </Button>
 
-                    <!-- Existing Buttons -->
-                    <Button Style="{StaticResource buttonBig}" Margin="112 0 5 0">
-                        <fa:ImageAwesome Icon="AngleLeft" Style="{StaticResource angleBig}"/>
-                    </Button>
+                        <!-- Right Button: Go to Next Day -->
+                        <Button Style="{StaticResource buttonBig}" Click="NextDay_Click">
+                            <fa:ImageAwesome Icon="AngleRight" Style="{StaticResource angleBig}"/>
+                        </Button>
+                    </StackPanel>
 
-                    <Button Style="{StaticResource buttonBig}">
-                        <fa:ImageAwesome Icon="AngleRight" Style="{StaticResource angleBig}"/>
-                    </Button>
                 </StackPanel>
 
-                <TextBlock Text="5 tasks- 2 dates left" Foreground="#EBA5BB" FontSize="16" Margin="35 0 20 0"/>
+                <TextBlock x:Name="TasksCounterTextBlock" Text="No tasks" Foreground="#EBA5BB" FontSize="16" Margin="35 0 20 0"/>
 
                 <!--Add Notes-->
                 <Border Background="#CD5278" CornerRadius="10" HorizontalAlignment="Center" Width="355" Margin="0 30 0 20" Padding="17 15 5 15">
@@ -89,17 +93,19 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <fa:ImageAwesome Icon="Bell" Width="15" Height="15" Foreground="#EBA5BB"/>
+                                <fa:ImageAwesome Icon="ClockOutline" Width="15" Height="15" Foreground="#EBA5BB"/>
                                 <TextBlock x:Name="lblTime" MouseDown="lblTime_MouseDown" Text="HH:mm" Style="{StaticResource textHint}"/>
-                                <TextBox Name="txtTime" TextChanged="txtTime_TextChanged" Style="{StaticResource textBox}"/>
+                                <TextBox Name="txtTime" TextChanged="txtTime_TextChanged"
+                                    PreviewTextInput="txtTime_PreviewTextInput"
+                                    PreviewKeyDown="txtTime_PreviewKeyDown"
+                                    MaxLength="5"
+                                    Style="{StaticResource textBox}"
+                                />
                             </Grid>
-
-
-
                         </StackPanel>
 
-                        <Button Style="{StaticResource button}" Grid.Column="1" Click="AddNewItem" >
-                            <fa:ImageAwesome Icon="PlusCircle" Width="28" Height="28" Foreground="#f9f9f9" />
+                        <Button x:Name="btnAdd" Style="{StaticResource button}" Grid.Column="1" Click="AddNewItem">
+                            <fa:ImageAwesome x:Name="btnAddIcon" Icon="PlusCircle" Width="28" Height="28" Foreground="#f9f9f9" />
                         </Button>
                     </Grid>
                 </Border>

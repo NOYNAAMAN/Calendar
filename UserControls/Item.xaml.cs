@@ -10,6 +10,7 @@ namespace Calender.UserControls
         public event EventHandler<int> DeleteItem;
         public event EventHandler<int> CheckItem;
         public event EventHandler<int> MuteItem;
+        public event EventHandler<int> EditItem;
 
         public Item()
         {
@@ -71,6 +72,10 @@ namespace Calender.UserControls
         private void MuteItem_Click(object sender, RoutedEventArgs e)
         {
             MuteItem?.Invoke(this, ItemId);
+        }
+        private void EditItem_Click(object sender, RoutedEventArgs e)
+        {
+            EditItem?.Invoke(this, ItemId);
         }
         public int ItemId
         {
