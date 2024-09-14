@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,108 +14,135 @@ namespace Calender
     {
         private readonly DataService _dataService;
         private List<CalendarItem> _calendarItems;
+
         public MainWindow()
         {
             InitializeComponent();
             _dataService = new DataService();
             LoadData();
+            DateTime today = DateTime.Today;
+            MyCalendar.SelectedDate = today;
+            UpdateDateDisplay(today);
         }
 
         private async void LoadData()
         {
             _calendarItems = await _dataService.LoadDataAsync();
-            DisplayCalendarItems();
+            DisplayCalendarItems(MyCalendar.SelectedDate ?? DateTime.Today);
         }
 
-        private void DisplayCalendarItems()
+        private void DisplayCalendarItems(DateTime selectedDate)
         {
-            var calendarGrid = (StackPanel)FindName("calendarItemsPanel");
+            calendarItemsPanel.Children.Clear();
 
-            calendarGrid.Children.Clear();
+            var itemsForDate = _calendarItems
+                .Where(item => item.Time.Date == selectedDate.Date)
+                .ToList();
 
-            foreach (var item in _calendarItems)
+            foreach (var item in itemsForDate)
             {
-                //// Filter by selected year, month, and day
-                //if (item.Time.Year == SelectedYear &&
-                //    item.Time.Month == SelectedMonth &&
-                //    item.Time.Day == SelectedDay)
-                //{
                 var calendarItemControl = new Item
                 {
                     ItemId = item.ItemId,
                     Title = item.Title,
-                    Time = $"{item.Time:HH:mm} - {item.Time.AddMinutes(30):HH:mm}",
-                    Color = new SolidColorBrush((item.IsChecked ? Colors.LightPink : Colors.White)),
+                    Time = item.NotificationHour,
+                    Color = new SolidColorBrush(item.IsChecked ? Colors.LightPink : Colors.White),
                     Icon = item.IsChecked ? FontAwesome.WPF.FontAwesomeIcon.CheckCircle : FontAwesome.WPF.FontAwesomeIcon.CircleThin,
                     IconBell = item.IsMuted ? FontAwesome.WPF.FontAwesomeIcon.BellSlash : FontAwesome.WPF.FontAwesomeIcon.Bell
                 };
 
+                // Attach event handlers
                 calendarItemControl.DeleteItem += CalendarItemControl_DeleteItem;
                 calendarItemControl.CheckItem += CalendarItemControl_CheckItem;
                 calendarItemControl.MuteItem += CalendarItemControl_MuteItem;
-                calendarGrid.Children.Add(calendarItemControl);
-                //}
+
+                calendarItemsPanel.Children.Add(calendarItemControl);
             }
         }
 
         private async void CalendarItemControl_DeleteItem(object sender, int itemId)
         {
-            if (await _dataService.DeleteItemAsync(itemId))
+            var item = _calendarItems.FirstOrDefault(i => i.ItemId == itemId);
+            if (item != null)
             {
-                _calendarItems.RemoveAll(item => item.ItemId == itemId);
-                DisplayCalendarItems();
+                _calendarItems.Remove(item);
+                await _dataService.SaveDataAsync(_calendarItems);
+                DisplayCalendarItems(MyCalendar.SelectedDate ?? DateTime.Today);
             }
             else
             {
-                MessageBox.Show("Error deleting the item.");
+                MessageBox.Show("Item not found.");
             }
-        }
-        private async void CalendarItemControl_CheckItem(object sender, int itemId)
-        {
-            if (await _dataService.CheckItemAsync(itemId))
-            {
-                _calendarItems = await _dataService.LoadDataAsync();
-                DisplayCalendarItems();
-            }
-            else
-            {
-                MessageBox.Show("Error checking the item.");
-            }
-        }
-        private async void CalendarItemControl_MuteItem(object sender, int itemId)
-        {
-            if (await _dataService.MuteItemAsync(itemId))
-            {
-                _calendarItems = await _dataService.LoadDataAsync();
-                DisplayCalendarItems();
-            }
-            else
-            {
-                MessageBox.Show("Error checking the item.");
-            }
-        }
-        private async void SaveCalendarItem(CalendarItem newItem)
-        {
-            _calendarItems.Add(newItem);
-            await _dataService.SaveDataAsync(_calendarItems);
-            DisplayCalendarItems();
         }
 
-        private void AddNewItem(object sender, RoutedEventArgs e)
+        private async void CalendarItemControl_CheckItem(object sender, int itemId)
         {
+            var item = _calendarItems.FirstOrDefault(i => i.ItemId == itemId);
+            if (item != null)
+            {
+                item.IsChecked = !item.IsChecked;
+                await _dataService.SaveDataAsync(_calendarItems);
+                DisplayCalendarItems(MyCalendar.SelectedDate ?? DateTime.Today);
+            }
+            else
+            {
+                MessageBox.Show("Item not found.");
+            }
+        }
+
+        private async void CalendarItemControl_MuteItem(object sender, int itemId)
+        {
+            var item = _calendarItems.FirstOrDefault(i => i.ItemId == itemId);
+            if (item != null)
+            {
+                item.IsMuted = !item.IsMuted;
+                await _dataService.SaveDataAsync(_calendarItems);
+                DisplayCalendarItems(MyCalendar.SelectedDate ?? DateTime.Today);
+            }
+            else
+            {
+                MessageBox.Show("Item not found.");
+            }
+        }
+
+        private async void AddNewItem(object sender, RoutedEventArgs e)
+        {
+            // Validate input
+            if (string.IsNullOrWhiteSpace(txtNote.Text))
+            {
+                MessageBox.Show("Please enter a note.");
+                return;
+            }
+
+            if (!TimeSpan.TryParseExact(txtTime.Text, "hh\\:mm", null, out TimeSpan notificationTime))
+            {
+                MessageBox.Show("Please enter a valid time in HH:mm format.");
+                return;
+            }
+
+            DateTime selectedDate = MyCalendar.SelectedDate ?? DateTime.Today;
+
             var newItem = new CalendarItem
             {
-                ItemId = _dataService.GetNextItemIdAsync().Result,
+                ItemId = _dataService.GetNextItemId(_calendarItems),
                 Title = txtNote.Text,
-                Time = DateTime.Parse(txtTime.Text),
+                Time = selectedDate,
+                NotificationHour = txtTime.Text,
                 IsChecked = false,
                 IsMuted = false
             };
 
-            SaveCalendarItem(newItem);
+            _calendarItems.Add(newItem);
+            await _dataService.SaveDataAsync(_calendarItems);
+            DisplayCalendarItems(selectedDate);
+
+            txtNote.Text = string.Empty;
+            txtTime.Text = string.Empty;
+            lblNote.Visibility = Visibility.Visible;
+            lblTime.Visibility = Visibility.Visible;
         }
 
-        private void Border_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
@@ -132,26 +158,31 @@ namespace Calender
             txtTime.Focus();
         }
 
-        private void txtNote_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void txtNote_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(txtNote.Text) && txtNote.Text.Length > 0)
-                lblNote.Visibility = Visibility.Collapsed;
-            else
-                lblNote.Visibility = Visibility.Visible;
+            lblNote.Visibility = string.IsNullOrEmpty(txtNote.Text) ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void txtTime_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void txtTime_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(txtTime.Text) && txtTime.Text.Length > 0)
-                lblTime.Visibility = Visibility.Collapsed;
-            else
-                lblTime.Visibility = Visibility.Visible;
+            lblTime.Visibility = string.IsNullOrEmpty(txtTime.Text) ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        private void Calendar_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (MyCalendar.SelectedDate.HasValue)
+            {
+                DateTime selectedDate = MyCalendar.SelectedDate.Value;
+                UpdateDateDisplay(selectedDate);
+            }
+        }
 
-
-
+        private void UpdateDateDisplay(DateTime date)
+        {
+            DayTextBlock.Text = date.Day.ToString();
+            MonthTextBlock.Text = date.ToString("MMMM");
+            DayOfWeekTextBlock.Text = date.ToString("dddd");
+            DisplayCalendarItems(date);
+        }
     }
 }
-
-
